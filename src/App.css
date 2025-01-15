@@ -1,0 +1,140 @@
+.app {
+  min-height: 100vh;
+}
+
+header {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 2rem;
+  text-align: center;
+}
+
+header h1 {
+  margin-bottom: 0.5rem;
+}
+
+.alphabet-nav {
+  background-color: white;
+  padding: 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.alphabet-list {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.alphabet-item {
+  padding: 0.5rem 0.8rem;
+  border: none;
+  border-radius: 4px;
+  background-color: transparent;
+  color: var(--primary-color);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.alphabet-item:hover:not(:disabled) {
+  background-color: var(--border-color);
+}
+
+.alphabet-item.active {
+  background-color: var(--secondary-color);
+  color: white;
+}
+
+.alphabet-item.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.search-section {
+  background-color: white;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.search-input {
+  display: block;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0.8rem;
+  font-size: 1rem;
+  border: 2px solid var(--border-color);
+  border-radius: 4px;
+  transition: border-color 0.3s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--secondary-color);
+}
+
+main {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.glossary-entry {
+  background-color: white;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.term-button {
+  width: 100%;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  color: var(--primary-color);
+}
+
+.term {
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.arrow {
+  transition: transform 0.3s ease;
+  font-size: 0.8rem;
+}
+
+.arrow.expanded {
+  transform: rotate(180deg);
+}
+
+.definition-wrapper {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+  padding: 0 1rem;
+}
+
+.definition-wrapper.expanded {
+  max-height: 500px;
+  padding: 0 1rem 1rem 1rem;
+}
+
+.definition {
+  color: #555;
+}
+
+.reference {
+  margin-top: 0.5rem;
+  font-style: italic;
+  color: #666;
+  font-size: 0.9rem;
+}
