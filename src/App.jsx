@@ -52,9 +52,15 @@ function App() {
   
   // Filter entries based on search and selected letter
   const filteredEntries = entries.filter(entry => {
-    const matchesSearch = entry.fields.term.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         entry.fields.definition.toLowerCase().includes(searchTerm.toLowerCase())
+    const term = entry.fields.term.toLowerCase()
+    const search = searchTerm.toLowerCase()
+    
+    // Match only from the start of the term
+    const matchesSearch = term.startsWith(search)
+    
+    // If a letter is selected from the alphabet nav, only show terms starting with that letter
     const matchesLetter = selectedLetter ? entry.fields.term[0].toUpperCase() === selectedLetter : true
+    
     return matchesSearch && matchesLetter
   })
 
@@ -104,7 +110,7 @@ function App() {
       <div className="search-section">
         <input
           type="text"
-          placeholder="Search the glossary..."
+          placeholder="Type to filter terms by their beginning letters..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="search-input"
