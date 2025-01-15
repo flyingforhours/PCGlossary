@@ -1,30 +1,12 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import './App.css'
+import { getGlossaryEntries } from './contentful'
 
-// Mock data for testing
-const glossaryData = [
-  {
-    id: '1',
-    term: 'AAM',
-    definition: 'See ADVANCED AIR MOBILITY.'
-  },
-  {
-    id: '2',
-    term: 'AAR',
-    definition: 'See AIRPORT ARRIVAL RATE.'
-  },
-  {
-    id: '3',
-    term: 'ABBREVIATED IFR FLIGHT PLANS',
-    definition: 'An authorization by ATC requiring pilots to submit only that information needed for the purpose of ATC. It includes only a small portion of the usual IFR flight plan information.',
-    reference: 'See VFR-ON-TOP. Refer to AIM.'
-  },
-  {
-    id: '4',
-    term: 'ABEAM',
-    definition: 'An aircraft is "abeam" a fix, point, or object when that fix, point, or object is approximately 90 degrees to the right or left of the aircraft track. Abeam indicates a general position rather than a precise point.'
-  }
-]
+// Debug: Log environment variables
+console.log('Environment variables:', {
+  spaceId: import.meta.env.VITE_CONTENTFUL_SPACE_ID,
+  hasAccessToken: !!import.meta.env.VITE_CONTENTFUL_ACCESS_TOKEN
+})
 
 // Single glossary entry component
 function GlossaryEntry({ term, definition, reference }) {
@@ -49,19 +31,50 @@ function GlossaryEntry({ term, definition, reference }) {
 }
 
 function App() {
+  const [entries, setEntries] = useState([])
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedLetter, setSelectedLetter] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+
+  useEffect(() => {
+    const fetchEntries = async () => {
+      try {
+        const items = await getGlossaryEntries()
+        setEntries(items)
+        setLoading(false)
+      } catch (err) {
+        setError('Failed to load glossary entries')
+        setLoading(false)
+      }
+    }
+
+    fetchEntries()
+  }, [])
 
   // Get unique first letters for the alphabet navigation
-  const letters = [...new Set(glossaryData.map(item => item.term[0].toUpperCase()))]
+  const letters = [...new Set(entries.map(item => item.fields.term[0].toUpperCase()))]
   
   // Filter entries based on search and selected letter
-  const filteredEntries = glossaryData.filter(entry => {
-    const matchesSearch = entry.term.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         entry.definition.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesLetter = selectedLetter ? entry.term[0].toUpperCase() === selectedLetter : true
+  const filteredEntries = entries.filter(entry => {
+    const matchesSearch = entry.fields.term.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         entry.fields.definition.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesLetter = selectedLetter ? entry.fields.term[0].toUpperCase() === selectedLetter : true
     return matchesSearch && matchesLetter
   })
+
+  if (loading) {
+    return (
+      <div className="loading">
+        <div className="loading-spinner"></div>
+        <p>Loading glossary entries...</p>
+      </div>
+    )
+  }
+
+  if (error) {
+    return <div className="error">{error}</div>
+  }
 
   return (
     <div className="app">
@@ -102,12 +115,17 @@ function App() {
       <main>
         {filteredEntries.map(entry => (
           <GlossaryEntry
-            key={entry.id}
-            term={entry.term}
-            definition={entry.definition}
-            reference={entry.reference}
+            key={entry.sys.id}
+            term={entry.fields.term}
+            definition={entry.fields.definition}
+            reference={entry.fields.reference}
           />
         ))}
+        {filteredEntries.length === 0 && (
+          <div className="no-results">
+            No entries found for your search
+          </div>
+        )}
       </main>
     </div>
   )
