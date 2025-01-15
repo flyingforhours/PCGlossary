@@ -2,30 +2,24 @@ import React, { useState, useEffect } from 'react'
 import './App.css'
 import { getGlossaryEntries } from './contentful'
 
-// Debug: Log environment variables
-console.log('Environment variables:', {
-  spaceId: import.meta.env.VITE_CONTENTFUL_SPACE_ID,
-  hasAccessToken: !!import.meta.env.VITE_CONTENTFUL_ACCESS_TOKEN
-})
-
 // Single glossary entry component
-function GlossaryEntry({ term, definition, reference }) {
-  const [isExpanded, setIsExpanded] = useState(false)
-
+function GlossaryEntry({ term, definition, reference, isExpanded, onClick }) {
   return (
-    <div className="glossary-entry">
+    <div className={`glossary-entry ${isExpanded ? 'expanded' : ''}`}>
       <button 
         className="term-button" 
-        onClick={() => setIsExpanded(!isExpanded)}
+        onClick={onClick}
       >
         <span className="term">{term}</span>
         <span className={`arrow ${isExpanded ? 'expanded' : ''}`}>▼</span>
       </button>
       
-      <div className={`definition-wrapper ${isExpanded ? 'expanded' : ''}`}>
-        <div className="definition">{definition}</div>
-        {reference && <div className="reference">{reference}</div>}
-      </div>
+      {isExpanded && (
+        <div className="definition-wrapper">
+          <div className="definition">{definition}</div>
+          {reference && <div className="reference">{reference}</div>}
+        </div>
+      )}
     </div>
   )
 }
@@ -36,6 +30,7 @@ function App() {
   const [selectedLetter, setSelectedLetter] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [expandedId, setExpandedId] = useState(null)
 
   useEffect(() => {
     const fetchEntries = async () => {
@@ -62,6 +57,10 @@ function App() {
     const matchesLetter = selectedLetter ? entry.fields.term[0].toUpperCase() === selectedLetter : true
     return matchesSearch && matchesLetter
   })
+
+  const handleEntryClick = (id) => {
+    setExpandedId(expandedId === id ? null : id)
+  }
 
   if (loading) {
     return (
@@ -113,14 +112,18 @@ function App() {
       </div>
 
       <main>
-        {filteredEntries.map(entry => (
-          <GlossaryEntry
-            key={entry.sys.id}
-            term={entry.fields.term}
-            definition={entry.fields.definition}
-            reference={entry.fields.reference}
-          />
-        ))}
+        <div className="glossary-grid">
+          {filteredEntries.map(entry => (
+            <GlossaryEntry
+              key={entry.sys.id}
+              term={entry.fields.term}
+              definition={entry.fields.definition}
+              reference={entry.fields.reference}
+              isExpanded={expandedId === entry.sys.id}
+              onClick={() => handleEntryClick(entry.sys.id)}
+            />
+          ))}
+        </div>
         {filteredEntries.length === 0 && (
           <div className="no-results">
             No entries found for your search

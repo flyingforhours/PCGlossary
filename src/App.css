@@ -82,34 +82,52 @@ main {
   padding: 0 1rem;
 }
 
+.glossary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  padding: 1rem;
+  position: relative;
+}
+
 .glossary-entry {
-  background-color: white;
+  background: white;
   border-radius: 8px;
-  margin-bottom: 1rem;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.glossary-entry.expanded {
+  grid-column: 1 / -1;
+  margin: 1rem 0;
+  z-index: 1;
 }
 
 .term-button {
   width: 100%;
   padding: 1rem;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: none;
-  border: none;
-  cursor: pointer;
-  text-align: left;
   color: var(--primary-color);
+  font-weight: 500;
+  font-size: 1.1rem;
+  font-weight: bold;
 }
 
-.term {
-  font-weight: bold;
-  font-size: 1.1rem;
+.term-button:hover {
+  background-color: var(--hover-color);
+  border-radius: 8px;
 }
 
 .arrow {
+  font-size: 0.8em;
   transition: transform 0.3s ease;
-  font-size: 0.8rem;
 }
 
 .arrow.expanded {
@@ -117,26 +135,22 @@ main {
 }
 
 .definition-wrapper {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.3s ease-out;
-  padding: 0 1rem;
-}
-
-.definition-wrapper.expanded {
-  max-height: 500px;
-  padding: 0 1rem 1rem 1rem;
+  padding: 1rem;
+  border-top: 1px solid var(--border-color);
+  background-color: var(--background-color);
+  border-radius: 0 0 8px 8px;
 }
 
 .definition {
-  color: #555;
+  color: var(--text-color);
+  line-height: 1.6;
+  margin-bottom: 0.5rem;
 }
 
 .reference {
-  margin-top: 0.5rem;
+  color: var(--secondary-color);
+  font-size: 1.1em;
   font-style: italic;
-  color: #666;
-  font-size: 0.9rem;
 }
 
 .loading {
